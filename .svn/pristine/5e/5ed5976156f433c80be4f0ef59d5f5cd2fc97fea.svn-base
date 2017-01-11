@@ -1,0 +1,187 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package md.autoservice.serviceauto.dao.impl;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import md.autoservice.serviceauto.dao.ReparatiDaoIntf;
+import md.autoservice.serviceauto.db.MyDataSource;
+import md.autoservice.serviceauto.model.Masini;
+import md.autoservice.serviceauto.model.Reparati;
+import md.autoservice.serviceauto.util.MyUtil;
+import md.autoservice.serviceauto.util.ReparatiNotFoundException;
+
+/**
+ *
+ * @author valera_
+ */
+public class ReparatiDaoImpl implements ReparatiDaoIntf{
+
+    private Connection conn;
+    
+    @Override
+    public Reparati save(Reparati reparatie) throws SQLException {
+    
+        conn = MyDataSource.getInstace().getConnection();
+
+        String saveSql = "INSERT INTO reparati VALUES(null, ?, ?, ?, ?)";
+        PreparedStatement stat = conn.prepareStatement(saveSql);
+
+        stat.setTimestamp(1, (new java.sql.Timestamp(reparatie.getDataIntrare().getTime())) );
+        stat.setTimestamp(2, (new java.sql.Timestamp(reparatie.getDataIesire().getTime())) );
+        stat.setString(3, reparatie.getProbleme());
+        stat.setInt(4, reparatie.getMasini().getId());
+
+        stat.executeUpdate();
+
+        MyUtil.closeConnection(conn);
+
+        return reparatie;
+    }
+
+    @Override
+    public Reparati update(Reparati reparatie) throws SQLException {
+    
+        String sqlUpdate = "UPDATE reparati SET dataIntrare=?, dataIesire=?,"
+                                     + " probleme=?, idMasina=? WHERE id=?";
+        
+        conn = MyDataSource.getInstace().getConnection();
+        PreparedStatement stat = conn.prepareStatement(sqlUpdate);
+        stat.setTimestamp(1, (new java.sql.Timestamp(reparatie.getDataIntrare().getTime())) );
+        stat.setTimestamp(2, (new java.sql.Timestamp(reparatie.getDataIesire().getTime())) );
+        stat.setString(3, reparatie.getProbleme());
+        stat.setInt(4, reparatie.getMasini().getId());
+        stat.setInt(5, reparatie.getId());
+        stat.executeUpdate();
+
+        MyUtil.closeConnection(conn);
+        return reparatie;
+    }
+
+    @Override
+    public void delete(Reparati reparatie) throws SQLException {
+
+        String deleteSql = "DELETE FROM reparati WHERE id=" + reparatie.getId();
+        conn = MyDataSource.getInstace().getConnection();
+        Statement stat = conn.createStatement();
+
+        stat.executeUpdate(deleteSql);
+        MyUtil.closeConnection(conn);
+    }
+
+    @Override
+    public Reparati findById(int id) throws ReparatiNotFoundException {
+    
+        Reparati reparatie = null;
+
+        String sql = "SELECT * FROM reparati WHERE id=" + id;
+
+        try {
+            conn = MyDataSource.getInstace().getConnection();
+      
+            Statement stmt = conn.createStatement();
+
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                reparatie = new Reparati(rs.getInt(1),
+                rs.getTimestamp(2),
+                rs.getTimestamp(3),
+                rs.getString(4));
+                //rs.ge(5));
+            }
+
+            MyUtil.closeConnection(conn);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ReparatiDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      
+
+        return reparatie;
+    }
+
+    @Override
+    public List<Reparati> findAll() {
+    
+        List<Reparati> listaReparatii = new ArrayList<>();
+
+        String sql = "SELECT * FROM reparati";
+
+        try {
+            conn = MyDataSource.getInstace().getConnection();
+
+            Statement stat = conn.createStatement();
+
+            ResultSet rs = stat.executeQuery(sql);
+
+            Reparati reparatie = null;
+            while (rs.next()) {
+                Masini masina = new Masini();
+                masina.setId(rs.getInt(8));
+                
+                reparatie = new Reparati();
+                reparatie.setId(rs.getInt(1));
+                reparatie.setDataIntrare(rs.getTimestamp(2));
+                reparatie.setDataIesire(rs.getTimestamp(3));
+                reparatie.setProbleme(rs.getString(4));
+                reparatie.setMasini(masina);
+
+                listaReparatii.add(reparatie);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AngajatDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listaReparatii;
+    }
+
+    @Override
+    public List<Reparati> findAllByMasinaId(int masinaId) {
+
+        List<Reparati> listaReparatii = new ArrayList<>();
+
+        String sql = "SELECT * FROM reparati WHERE idMasina="+masinaId;
+
+        try {
+            conn = MyDataSource.getInstace().getConnection();
+
+            Statement stat = conn.createStatement();
+
+            ResultSet rs = stat.executeQuery(sql);
+
+            Reparati reparatie = null;
+            while (rs.next()) {
+
+                
+//                Masini masina = new Masini();
+//                masina.setId(rs.getInt(8));
+//                
+                reparatie = new Reparati();
+                reparatie.setId(rs.getInt(1));
+                reparatie.setDataIntrare(rs.getTimestamp(2));
+                reparatie.setDataIesire(rs.getTimestamp(3));
+                reparatie.setProbleme(rs.getString(4));
+               // reparatie.setMasini(masina);
+
+                listaReparatii.add(reparatie);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AngajatDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listaReparatii;
+    }
+    
+}

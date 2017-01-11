@@ -1,0 +1,24 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package md.autoservice.serviceauto.dao;
+
+import java.sql.SQLException;
+import java.util.List;
+import md.autoservice.serviceauto.model.Masini;
+import md.autoservice.serviceauto.util.MasinaNotFoundException;
+
+/**
+ *
+ * @author iucosoft5
+ */
+public interface MasiniDaoIntf {
+    
+    Masini save(Masini masina) throws SQLException;
+    Masini update(Masini masina) throws SQLException;
+    void delete(Masini masina) throws SQLException;
+    Masini findById(int id) throws MasinaNotFoundException;
+    Masini findByNrInmatriculare(String nrInmatriculare) throws MasinaNotFoundException;
+    List<Masini> findAll();
+}

@@ -1,0 +1,122 @@
+
+package md.autoservice.serviceauto.util;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author iurasun
+ */
+public class MyUtil {
+    //constants
+    public static String PROPS_FILE_NAME="db.properties";
+    public static boolean DEBUG=true;
+
+    public static int getNrRows(Connection conn, String tabelaName) {
+
+        int nr=0;
+        
+        Statement stat=null;
+        try {
+            stat=conn.createStatement();
+            ResultSet rs=stat.executeQuery("SELECT COUNT(*) FROM "+tabelaName);
+            if(rs.next()){
+               nr=rs.getInt(1);
+            }
+            
+            rs.close();
+            stat.close();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(MyUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return nr;
+    }
+
+    public static java.sql.Date convertDate(java.util.Date dateUtil) {
+        java.sql.Date dateSql=null;
+       
+         dateSql=new java.sql.Date(  dateUtil.getTime());
+        
+        return dateSql;
+        
+    }
+
+    
+    public static String convertDateToStr(java.util.Date dateUtil) {
+        String dateStr="0000-00-00";
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        dateStr = df.format(dateUtil);
+        
+        return dateStr;
+        
+    }
+    
+    
+    public static int getMaxId(Connection conn, String tabelaName) {
+     
+        int nr=0;
+        
+        Statement stat=null;
+        try {
+            stat=conn.createStatement();
+            ResultSet rs=stat.executeQuery("SELECT MAX(id) FROM "+tabelaName);
+            if(rs.next()){
+               nr=rs.getInt(1);
+            }
+            
+            rs.close();
+            stat.close();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(MyUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return nr;        
+    }
+
+    public static java.util.Date convertSqlDate(java.sql.Date dateSql) {
+          
+        java.util.Date dateUtil=new java.util.Date(dateSql.getTime());
+     
+        return  dateUtil; 
+    }
+
+    public static Date convertStrToUtilDate(String textFormatat) {
+        String separator="/";//yyyy/MM/dd
+        if(textFormatat.indexOf("-")!=-1){
+           separator="-";  //yyyy-MM-dd
+        }
+        
+        String[] texte=textFormatat.split(separator);
+        
+        int year=Integer.parseInt(texte[0]);//yyyy
+        int luna=Integer.parseInt(texte[1])-1        ;//MM
+        int ziuaDinLuna=Integer.parseInt(texte[2]);//dd
+                
+        
+        Calendar calendar = new GregorianCalendar(year, luna, ziuaDinLuna);
+        
+        java.util.Date date=calendar.getTime();
+        return date;
+    }
+    
+    
+    public static void closeConnection(Connection conn) throws SQLException{
+        if(conn!=null &&  !conn.isClosed()){
+          conn.close();
+        }
+    }
+}

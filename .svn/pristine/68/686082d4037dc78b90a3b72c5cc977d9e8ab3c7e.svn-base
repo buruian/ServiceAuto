@@ -1,0 +1,146 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package md.autoservice.serviceauto.dao.impl;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import md.autoservice.serviceauto.dao.AngajatDaoIntf;
+import md.autoservice.serviceauto.db.MyDataSource;
+import md.autoservice.serviceauto.model.Angajat;
+import md.autoservice.serviceauto.util.MyUtil;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+/**
+ *
+ * @author iucosoft5
+ */
+public class AngajatDaoImplTest {
+    
+    public AngajatDaoImplTest() {
+    }
+    
+    @BeforeClass
+    public static void setUpClass() {
+    }
+    
+    @AfterClass
+    public static void tearDownClass() {
+    }
+    
+    @Before
+    public void setUp() {
+    }
+    
+    @After
+    public void tearDown() {
+    }
+
+    /**
+     * Test of save method, of class AngajatDaoImpl.
+     */
+    @Test
+    public void testSave() throws Exception {
+        System.out.println("save");
+        Angajat angajat = null;
+      
+        // TODO review the generated test code and remove the default call to fail.
+      
+        angajat = new Angajat(1, "Ion", "Banu", 47855, "motorist");
+        AngajatDaoIntf angajatDaoIntf = new AngajatDaoImpl();
+        angajatDaoIntf.save(angajat);
+      //  fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of update method, of class AngajatDaoImpl.
+     */
+    @Test
+    public void testUpdate() throws Exception {
+        System.out.println("update");
+        Angajat angajat = null;
+        AngajatDaoImpl instance = new AngajatDaoImpl();
+        Angajat expResult = null;
+        Angajat result = instance.update(angajat);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of delete method, of class AngajatDaoImpl.
+     */
+    @Test
+    public void testDelete() throws Exception {
+        
+        Connection conn = MyDataSource.getInstace().getConnection();
+        int nr = MyUtil.getNrRows(conn, "Angajat");
+        System.out.println("delete");
+        Angajat angajat = new Angajat();
+       
+        int id = MyUtil.getMaxId(conn, "Angajat");
+        angajat.setId(8);
+        AngajatDaoImpl instance = new AngajatDaoImpl();
+        instance.delete(angajat);
+         int nr1 = MyUtil.getNrRows(conn, "Angajat");
+        assertEquals(nr, nr1+1);
+//        if(nr == nr-1){
+//            System.out.println("succes");
+//        }
+        // TODO review the generated test code and remove the default call to fail.
+       // fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of findById method, of class AngajatDaoImpl.
+     */
+    @Test
+    public void testFindById() throws Exception {
+        System.out.println("findById");
+        int id = 4;
+        AngajatDaoImpl instance = new AngajatDaoImpl();
+        String expResult = "Ion";
+        Angajat result = instance.findById(id);
+        assertEquals(expResult, result.getNume());
+        
+    }
+
+    /**
+     * Test of findByNumeAndPrenume method, of class AngajatDaoImpl.
+     */
+//    @Test
+//    public void testFindByNumeAndPrenume() throws Exception {
+//        System.out.println("findByNumeAndPrenume");
+//        String nume = "";
+//        String prenume = "";
+//        AngajatDaoImpl instance = new AngajatDaoImpl();
+//        Angajat expResult = null;
+//      //  Angajat result = instance.findByNumeAndPrenume(nume, prenume);
+//      //  assertEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+
+    /**
+     * Test of findAll method, of class AngajatDaoImpl.
+     */
+    @Test
+    public void testFindAll() throws SQLException {
+        
+        Connection conn = MyDataSource.getInstace().getConnection();
+        System.out.println("findAll");
+        AngajatDaoImpl instance = new AngajatDaoImpl();
+        int expResult = MyUtil.getNrRows(conn, "Angajat");
+        List<Angajat> result = instance.findAll();
+        assertEquals(expResult, result.size());
+        // TODO review the generated test code and remove the default call to fail.
+        //fail("The test case is a prototype.");
+    }
+}

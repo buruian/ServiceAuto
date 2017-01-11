@@ -1,0 +1,133 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package md.autoservice.serviceauto.gui.models;
+
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import md.autoservice.serviceauto.model.Angajat;
+import md.autoservice.serviceauto.service.ReparatieAngajatServiceDaoIntf;
+import md.autoservice.serviceauto.service.impl.ReparatieAngajatServiceDaoImpl;
+import md.autoservice.serviceauto.util.ReparatiNotFoundException;
+
+/**
+ *
+ * @author iucosoft4
+ */
+public class AngajatiSelectatiTableModel extends DefaultTableModel{
+    private static final Logger LOG = Logger.getLogger(AngajatiSelectatiTableModel.class.getName());
+
+    private ReparatieAngajatServiceDaoIntf  reparatieAngajatService = new ReparatieAngajatServiceDaoImpl();
+    private List<Angajat> listaAngajati = new ArrayList<>();
+    private String []columns = {"id","Nume","Prenume","Telefon", "Functia"};
+    
+    public AngajatiSelectatiTableModel(List<Angajat> listaAngajatiSelectati) {
+
+         addColums();
+        
+         for(Angajat angajat:listaAngajatiSelectati){
+           Vector rowData = new Vector();
+           rowData.addElement(angajat.getId());
+           rowData.addElement(angajat.getNume());
+           rowData.addElement(angajat.getPrenume());
+           rowData.addElement(angajat.getFunctia());
+           rowData.addElement(angajat.getNrTelefon());
+           
+           super.addRow(rowData);
+       }
+    }
+
+    public AngajatiSelectatiTableModel(int idReparatie){
+        
+        addColums();
+        try {
+            listaAngajati = reparatieAngajatService.findAngajatiByIdReparatie(idReparatie);
+            
+           for(Angajat angajat:listaAngajati){
+           Vector rowData = new Vector();
+           rowData.addElement(angajat.getId());
+           rowData.addElement(angajat.getNume());
+           rowData.addElement(angajat.getPrenume());
+            rowData.addElement(angajat.getNrTelefon());
+           rowData.addElement(angajat.getFunctia());
+          
+           
+           super.addRow(rowData);
+       }
+            
+        } catch (ReparatiNotFoundException ex) {
+            Logger.getLogger(AngajatiSelectatiTableModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }
+    
+    public AngajatiSelectatiTableModel() {
+
+        addColums();
+    }
+    
+    private void addColums(){
+         for(String numeColoana:columns){
+           super.addColumn(numeColoana);
+       }
+    }
+
+    public List<Angajat> getAllByReparatieId(int idReparatie) {
+        
+        List<Angajat> lista=new ArrayList<>();
+//        try {
+//            lista=reparatieAngajatService.findAngajatiByIdReparatie(idReparatie);
+//        } catch (ReparatiNotFoundException ex) {
+//            LOG.info(ex.getMessage());
+//        }
+ 
+           
+        Vector dataVector =super.getDataVector();
+        
+        
+        for (int i = 0; i < dataVector.size() ; i++) {
+            Vector rowData = (Vector)dataVector.get(i);
+            
+
+//            StringBuilder text=new StringBuilder();
+//            
+//            text.append(rowData.get(0));
+//            text.append(" ");
+//            
+//            text.append(rowData.get(1));
+//            text.append(" ");
+//            text.append(rowData.get(2));
+//            text.append(" ");
+//            text.append(rowData.get(3));
+//            text.append(" ");
+//            text.append(rowData.get(4));
+//            text.append(" GATA");
+//            
+//            LOG.info("ROW:"+ text.toString());
+//            
+            Angajat angajat =new Angajat(
+                    (Integer)rowData.get(0), 
+                    (String)rowData.get(1), 
+                    (String)rowData.get(2),
+                    (Integer)rowData.get(4),
+                    (String) rowData.get(3) );
+            lista.add(angajat);
+            
+        }
+        
+        
+        return lista;
+    }
+
+    public void clear() {
+       super.dataVector.clear();
+     }
+    
+}

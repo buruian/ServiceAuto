@@ -1,0 +1,114 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package md.autoservice.serviceauto.service.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import md.autoservice.serviceauto.dao.MasiniDaoIntf;
+import md.autoservice.serviceauto.dao.ProprietarDaoIntf;
+import md.autoservice.serviceauto.dao.impl.MasiniDaoImpl;
+import md.autoservice.serviceauto.dao.impl.ProprietarDaoImpl;
+import md.autoservice.serviceauto.db.MyDataSource;
+import md.autoservice.serviceauto.model.Masini;
+import md.autoservice.serviceauto.model.Proprietar;
+import md.autoservice.serviceauto.util.MasinaNotFoundException;
+import md.autoservice.serviceauto.util.MyUtil;
+import md.autoservice.serviceauto.util.ProprietarNotFoundException;
+
+/**
+ *
+ * @author iucosoft4
+ */
+public class MasinaProprietarDaoImpl implements md.autoservice.serviceauto.service.MasinaProprietarDaoIntf{
+
+
+    
+    @Override
+    public Masini findByIdMasina(int idMasina) throws MasinaNotFoundException {
+
+        Masini masina = null;
+        
+        MasiniDaoIntf masiniDao = new MasiniDaoImpl();
+        ProprietarDaoIntf proprietarDao = new ProprietarDaoImpl();
+        
+        masina = masiniDao.findById(idMasina);
+        try {
+            
+            Proprietar proprietar = proprietarDao.findById(masina.getProprietar().getId());
+        
+            masina.setProprietar(proprietar);
+            
+        } catch (ProprietarNotFoundException ex) {
+            Logger.getLogger(MasinaProprietarDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return masina;
+        
+    }
+
+    @Override
+    public void save(Masini masina) throws Exception{
+        
+        MasiniDaoIntf masinaDao = new MasiniDaoImpl();
+        ProprietarDaoIntf proprietarDao = new ProprietarDaoImpl();
+        proprietarDao.save(masina.getProprietar());
+        
+        int idProprietar = MyUtil.getMaxId(MyDataSource.getInstace().getConnection(), "proprietar");
+        masina.getProprietar().setId(idProprietar);
+       
+        try {
+            masinaDao.save(masina);
+        } catch (SQLException ex) {
+            Logger.getLogger(MasinaProprietarDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+
+    @Override
+    public void update(Masini masina) throws Exception {
+        MasiniDaoIntf masinaDao = new MasiniDaoImpl();
+        ProprietarDaoIntf proprietarDao = new ProprietarDaoImpl();
+        proprietarDao.update(masina.getProprietar());
+        
+        int idProprietar = MyUtil.getMaxId(MyDataSource.getInstace().getConnection(), "proprietar");
+       // masina.getProprietar().setId(idProprietar);
+       
+        try {
+            masinaDao.update(masina);
+        } catch (SQLException ex) {
+            Logger.getLogger(MasinaProprietarDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+
+    
+    @Override
+    public Masini findByIdNrInmatriculare(String nrInmatriculare) throws MasinaNotFoundException {
+    
+         Masini masina = null;
+        
+        MasiniDaoIntf masiniDao = new MasiniDaoImpl();
+        ProprietarDaoIntf proprietarDao = new ProprietarDaoImpl();
+        
+        masina = masiniDao.findByNrInmatriculare(nrInmatriculare);
+        try {
+            
+            Proprietar proprietar = proprietarDao.findById(masina.getProprietar().getId());
+        
+            masina.setProprietar(proprietar);
+            
+        } catch (ProprietarNotFoundException ex) {
+            Logger.getLogger(MasinaProprietarDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return masina;
+    }
+}
+    

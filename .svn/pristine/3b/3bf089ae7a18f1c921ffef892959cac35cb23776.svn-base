@@ -1,0 +1,24 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package md.autoservice.serviceauto.dao;
+
+import java.sql.SQLException;
+import java.util.List;
+import md.autoservice.serviceauto.model.Reparati;
+import md.autoservice.serviceauto.util.ReparatiNotFoundException;
+
+
+/**
+ *
+ * @author iucosoft5
+ */
+public interface ReparatiDaoIntf {
+    Reparati save(Reparati reparatie) throws SQLException;
+    Reparati update(Reparati reparatie) throws SQLException;
+    void delete(Reparati reparatie) throws SQLException;
+    Reparati findById(int id) throws ReparatiNotFoundException;
+    List<Reparati> findAll();
+    List<Reparati> findAllByMasinaId(int masinaId);
+}
